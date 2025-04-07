@@ -1,12 +1,12 @@
 import sys
 import os
 import cv2
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import streamlit as st
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.utils.model_init import violence_model, gun_model
 from src.services.anomaly_relatory import anomaly_report
 import dotenv
-from sqlalchemy.sql import text
+from src.utils.bd_functions import bd_insert
 dotenv.load_dotenv()
 
 st.title("Camera Stream")
@@ -20,11 +20,6 @@ model_violence = violence_model()
 model_gun = gun_model()
 # Button to start the stream
 start_stream = st.button("Start Stream")
-
-conn = st.connection("mysql")
-with conn.session as s:
-    s.execute(text("CREATE TABLE IF NOT EXISTS anomaly_report (id INTEGER PRIMARY KEY AUTO_INCREMENT, date varchar(40) , time varchar(20) , location varchar(50))"))
-    s.commit()
 
 #TODO Transformar em uma função e colocar no src/utils
 if start_stream and camera_url:
