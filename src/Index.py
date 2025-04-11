@@ -4,8 +4,6 @@ import cv2
 import streamlit as st
 from src.utils.model_init import violence_model, gun_model
 from src.utils.image_compress import compress_img
-import numpy as np
-from numpy.typing import NDArray
 import dotenv
 dotenv.load_dotenv()
 
