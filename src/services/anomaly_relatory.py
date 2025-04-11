@@ -1,7 +1,8 @@
 from src.utils.location_and_date import location, time_date
 import os
 
-def anomaly_report():
+def anomaly_report() -> None:
+    """Aqui retornamos um novo arquivo de relatório"""
     dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     path = os.path.join(dir, "data/reports")
     longitude, latitude = location()

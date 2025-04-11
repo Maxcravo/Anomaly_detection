@@ -1,10 +1,9 @@
 import streamlit as st
 from folium import folium, Marker 
 from src.utils.bd_functions import bd_get_id
-from streamlit_folium import st_folium
+from streamlit_folium import st_folium  # type: ignore
 
 st.title("This is the report page.")
-
 if "report" not in st.session_state:
   st.error("Select a Report in saves page")
 else:
@@ -15,7 +14,6 @@ else:
     st.write(f"Error: {e}")
   if response_bd is None:
     st.error("Error in found data in BD")
-    
   #TODO Transformar em função
   map =  folium.Map([float(response_bd[0].longitude), float(response_bd[0].latitude)], zoom_start=20)
   Marker(
