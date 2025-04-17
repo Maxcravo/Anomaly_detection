@@ -2,8 +2,11 @@ import sys, os, time
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import cv2
 import streamlit as st
+from datetime import date
 from src.utils.model_init import violence_model, gun_model
 from src.utils.image_compress import compress_img
+import pandas as pd
+from src.utils.frame_to_csv import frame_to_csv
 import dotenv
 dotenv.load_dotenv()
 
@@ -25,47 +28,61 @@ names = model_violence.names
 start_stream = st.button("Start Stream")
 
 #TODO Transformar em uma função e colocar no src/utils
-# if start_stream and camera_url:
-if start_stream:
-  # cap = cv2.VideoCapture(camera_url)
+if start_stream and camera_url:
+# if start_stream:
+  cap = cv2.VideoCapture(camera_url)
   #! Test videoCap notebook
-  cap = cv2.VideoCapture(0)
+  # cap = cv2.VideoCapture(0)
   
   fps = cap.get(cv2.CAP_PROP_FPS)
-  frame_skip = int(fps / 3) 
-  frame_count = 0 
+  fps_out = 3
+  index_in = -1
+  index_out = -1
+
   if not cap.isOpened():
       st.error("Error: Unable to open video stream. Please check the URL.")
   else:
     stop_stream = st.button("Stop Stream")
     # Stream frames to the Streamlit app
     while cap.isOpened() and not stop_stream:
-      if frame_count % frame_skip == 0:
-        ret, frame = cap.read()
-        result_violence = model_violence.predict(frame, conf=0.85)
-        result_gun = model_gun.predict(frame, conf=0.60)
+      cap_sucess = cap.grab()
+      index_in +=1
+      out = int(index_in/fps * fps_out)
+      if out > index_out:
+        cap_sucess, frame = cap.retrieve()
+        index_out+=1
+        result_violence = model_violence.predict(frame, conf=0.55)
+        # result_gun = model_gun.predict(frame, conf=0.60)
         if len(result_violence[0].boxes) > 0:
           loop_time:float = time.time() + 5 # Temos que começar a contagem apenas depois que o primeiro frame de violência for detectado
           st.write("Violence outside the loop")
+          #* Dentro desse loop temos que ler os frames chamando mais uma vez o cap.retrieve()
           while time.time() < loop_time:
-            #! Dentro desse loop temos que ler os frames chamando mais uma vez o cap.read()
-            ret_loop, frame_loop = cap.read()
-            if frame_count % frame_skip == 0:
-              if not ret_loop:
+            cap_loop = cap.grab()
+            index_in +=1
+            out_loop = int(index_in/fps * fps_out)
+            if out_loop > index_out:
+              sucess_loop, frame_loop = cap.retrieve()
+              index_out +=1
+              st.image(frame_loop, channels="RGB")
+              st.session_state.compressed_frame.append([compress_img(frame_loop)])
+              if not cap_sucess:
                 st.error("error")
                 break
-              st.image(frame_loop, channels="RGB")
-              st.session_state.compressed_frame.append(compress_img(frame_loop))
-        if not ret:
+          
+        if not cap_sucess:
           st.error("Error: Unable to read frame from stream.")
           break
         #Debug Display the frame in the Streamlit app
-    # Release resources
     cap.release()
     st.success("Stream stopped.")
 
-button_decode = st.button("see image compressed")
+button_decode = st.button("create csv")
 if button_decode:
-  for frame in st.session_state.compressed_frame:
-    decode_frame = cv2.imdecode(frame,1)
-    st.image(decode_frame, channels="RGB")
+  frame_to_csv(compressed_frame=st.session_state.compressed_frame)
+  st.session_state.compressed_frame = []
+
+  # for frame in st.session_state.compressed_frame:
+  #   decode_frame = cv2.imdecode(frame,1)
+  #   st.image(decode_frame, channels="RGB")
+  
