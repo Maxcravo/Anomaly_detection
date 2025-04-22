@@ -17,7 +17,7 @@ def frame_to_csv(compressed_frame:list):
         frame_data.append({"date": str(date.today()), "image": img_to_base64})
     print("i am here")
     df = pd.DataFrame(frame_data)
-    df.to_csv(f"{path}/test.csv", index=False)
+    df.to_csv(f"{path}/{str(date.today())}.csv", index=False)
   except Exception as e:
     print(e)
   
