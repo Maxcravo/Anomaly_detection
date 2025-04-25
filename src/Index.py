@@ -2,11 +2,10 @@ import sys, os, time
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import cv2
 import streamlit as st
-from datetime import date
 from src.utils.model_init import violence_model, gun_model
 from src.utils.image_compress import compress_img
-import pandas as pd
 from src.utils.frame_to_csv import frame_to_csv
+from src.services.face_blurry import face__blurry
 import dotenv
 dotenv.load_dotenv()
 
@@ -21,9 +20,7 @@ camera_url = st.text_input(
     placeholder="http:// or rtsp://"
 )
 # Initialize the models
-model_violence = violence_model()
-model_gun = gun_model()
-names = model_violence.names
+names = violence_model().names
 # Button to start the stream
 start_stream = st.button("Start Stream")
 
@@ -51,7 +48,7 @@ if start_stream and camera_url:
       if out > index_out:
         cap_sucess, frame = cap.retrieve()
         index_out+=1
-        result_violence = model_violence.predict(frame, conf=0.55)
+        result_violence = violence_model().predict(frame, conf=0.55)
         # result_gun = model_gun.predict(frame, conf=0.60)
         if len(result_violence[0].boxes) > 0:
           loop_time:float = time.time() + 5 # Temos que começar a contagem apenas depois que o primeiro frame de violência for detectado
@@ -64,7 +61,8 @@ if start_stream and camera_url:
             if out_loop > index_out:
               sucess_loop, frame_loop = cap.retrieve()
               index_out +=1
-              st.image(frame_loop, channels="RGB")
+              frame_loop = face__blurry(frame_loop)
+              st.image(frame_loop, channels="BGR")
               st.session_state.compressed_frame.append([compress_img(frame_loop)])
               if not cap_sucess:
                 st.error("error")

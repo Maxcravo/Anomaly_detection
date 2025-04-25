@@ -12,6 +12,7 @@ search_button = st.button(label="search")
 try:
   assert len(search_report) == 10 and search_report[4] == "-" and search_report[7] == "-"
   if search_report and search_button:
+    #TODO Acessar todos os dataframes que vão retornar da função e deixar o usuários escolher qual ele vai ver
     result = read_csv(search_report)
   if result == None:
     st.error("No data found for the given date.")

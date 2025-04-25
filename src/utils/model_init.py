@@ -1,6 +1,12 @@
 from ultralytics import YOLO
 import os
 
+def face_model():
+  dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+  model_path = os.path.join(dir, "data", "yolov8_face.pt" )
+  model = YOLO(model_path)
+  return model
+
 def violence_model():
   """Return the yolo model that recognize violence in a frame"""
   dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
