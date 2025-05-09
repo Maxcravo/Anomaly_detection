@@ -25,11 +25,11 @@ names = violence_model().names
 start_stream = st.button("Start Stream")
 
 #TODO Transformar em uma função e colocar no src/utils
-if start_stream and camera_url:
-# if start_stream:
-  cap = cv2.VideoCapture(camera_url)
+# if start_stream and camera_url:
+if start_stream:
+  # cap = cv2.VideoCapture(camera_url)
   #! Test videoCap notebook
-  # cap = cv2.VideoCapture(0)
+  cap = cv2.VideoCapture(0)
   
   fps = cap.get(cv2.CAP_PROP_FPS)
   fps_out = 3
@@ -48,10 +48,10 @@ if start_stream and camera_url:
       if out > index_out:
         cap_sucess, frame = cap.retrieve()
         index_out+=1
-        result_violence = violence_model().predict(frame, conf=0.55)
-        # result_gun = model_gun.predict(frame, conf=0.60)
+        result_violence = violence_model().predict(frame, conf=0.55) 
+        #* Caso o modelo detecte violência, ele vai entrar no loop
         if len(result_violence[0].boxes) > 0:
-          loop_time:float = time.time() + 5 # Temos que começar a contagem apenas depois que o primeiro frame de violência for detectado
+          loop_time:float = time.time() + 5 #* Temos que começar a contagem apenas depois que o primeiro frame de violência for detectado, pegando os próximos 5 segundos
           st.write("Violence outside the loop")
           #* Dentro desse loop temos que ler os frames chamando mais uma vez o cap.retrieve()
           while time.time() < loop_time:
@@ -61,13 +61,13 @@ if start_stream and camera_url:
             if out_loop > index_out:
               sucess_loop, frame_loop = cap.retrieve()
               index_out +=1
-              frame_loop = face__blurry(frame_loop)
+              frame_loop = face__blurry(frame_loop) #* Como foi identificado um frame de violência, aplicamos o blur no rosto dos envolvidos.
               st.image(frame_loop, channels="BGR")
-              st.session_state.compressed_frame.append([compress_img(frame_loop)])
+              #TODO Verificar se é necessário criar uma nova lista dentro da session_state para cada frame
+              st.session_state.compressed_frame.append([compress_img(frame_loop)]) #* comprimimos a imagem e adicionamos na lista que está salva na sessão
               if not cap_sucess:
                 st.error("error")
                 break
-          
         if not cap_sucess:
           st.error("Error: Unable to read frame from stream.")
           break

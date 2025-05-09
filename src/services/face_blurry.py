@@ -6,7 +6,7 @@ from PIL import Image
 from utils.model_init import face_model
 
 # https://sayantansamanta098.medium.com/real-time-face-detection-and-blurring-using-python-and-opencv-a0ac39efade2
-def face__blurry(frame:MatLike) -> MatLike | None:
+def face__blurry(frame:MatLike) -> MatLike | str:
   try:
     results = face_model().predict(frame, conf=0.5, show=True)
     for result in results:
@@ -20,5 +20,5 @@ def face__blurry(frame:MatLike) -> MatLike | None:
     #   frame[y:y+h, x:x+w] = blur
   except Exception as e:
     print(f"Error: {e} in face blurry")
-    return None
+    return f"Error: {e} in face blurry"
   return frame

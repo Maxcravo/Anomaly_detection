@@ -1,14 +1,16 @@
 import streamlit as st
 from folium import folium, Marker 
 from src.utils.bd_functions import bd_get_id
+from src.utils.read_csv import read_image_csv
 from streamlit_folium import st_folium  # type: ignore
 
 st.title("This is the report page.")
+st.write(st.session_state["report"])
 if "report" not in st.session_state:
   st.error("Select a Report in saves page")
 else:
   try:
-    response_bd = bd_get_id(int(st.session_state["report"]))
+    response = read_image_csv(st.session_state["report_date"], st.session_state["report"])
   except Exception as e:
     st.error("Error retrieving data from the database.")
     st.write(f"Error: {e}")
