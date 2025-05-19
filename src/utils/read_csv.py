@@ -36,8 +36,8 @@ def read_image_csv(date:str, time:str) -> list[MatLike]| None:
         if img is None:
           return f"error in image cv2 decode" # type: ignore
   if img is not None:
-    img_unique = remove_duplicate(img)
-    return img_unique
+    # img_unique = remove_duplicate(img)
+    return img
 
 def csv_time(date:str) -> list| None:
   time_list = []
