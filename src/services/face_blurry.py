@@ -6,11 +6,11 @@ from PIL import Image
 from utils.model_init import face_model
 
 # https://sayantansamanta098.medium.com/real-time-face-detection-and-blurring-using-python-and-opencv-a0ac39efade2
-def face__blurry(frame:MatLike) -> MatLike | str:
+def face__blurry(frame:MatLike) -> MatLike:
   try:
     results = face_model().predict(frame, conf=0.5, show=True)
     for result in results:
-      boxes = result.boxes.xyxy
+      boxes = result.boxes.xyxy # type: ignore
       for box in boxes:
         # para cada coordenada de cada caixa, transformamos os valores para inteiros
         x1, y1, x2, y2 = int(box[0]), int(box[1]), int(box[2]), int(box[3])
@@ -20,5 +20,4 @@ def face__blurry(frame:MatLike) -> MatLike | str:
     #   frame[y:y+h, x:x+w] = blur
   except Exception as e:
     print(f"Error: {e} in face blurry")
-    return f"Error: {e} in face blurry"
   return frame

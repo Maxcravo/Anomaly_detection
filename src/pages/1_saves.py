@@ -1,6 +1,6 @@
 import streamlit as st
 from src.utils.bd_functions import bd_get
-from src.utils.read_csv import read_image_csv, read_csv_time
+from src.utils.read_csv import csv_time
 import random
 
 # Para cada elemento que eu tiver salvo eu tenho que recuperar os saves e adicionar aqui na página
@@ -19,7 +19,10 @@ try:
     #TODO Agora preciso pegar o arquivo que foi salvo, e associa aquela data pegar todos os diferentes horarios que foram obtidos
     #TODO para cada horário eu crio um button que vai abrir os frames desse horário
     #! Não consigui fazer o redirect para a página de report diretamente.
-    nbuttons = read_csv_time(search_report)
+    nbuttons = csv_time(search_report)
+    if nbuttons is None:
+      st.warning("error in read the csv")
+      st.stop()
     cols = st.columns(5)
     st.warning("Select the time of the report and go to report page")
     for n, button in enumerate(nbuttons):

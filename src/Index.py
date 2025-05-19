@@ -12,7 +12,17 @@ dotenv.load_dotenv()
 if "compressed_frame" not in st.session_state:
   st.session_state.compressed_frame = []
 
+if "latitude_longitude" not in st.session_state:
+  st.session_state.latitude_longitude = {"latitude": "", "longitude": ""}
+
 st.title("Camera Stream")
+
+latitude = st.text_input(
+  label="Enter the latitude"
+)
+longitude = st.text_input(
+  label="Enter the longitude"
+)
 # Input for the camera stream URL
 camera_url = st.text_input(
     label="Enter the camera stream URL",
@@ -25,8 +35,10 @@ names = violence_model().names
 start_stream = st.button("Start Stream")
 
 #TODO Transformar em uma função e colocar no src/utils
-# if start_stream and camera_url:
-if start_stream:
+# if start_stream and camera_url and longitude and latitude:
+if start_stream and longitude and latitude:
+  st.session_state.latitude_longitude.update(latitude = latitude, longitude = longitude)
+  print(st.session_state.latitude_longitude)
   # cap = cv2.VideoCapture(camera_url)
   #! Test videoCap notebook
   cap = cv2.VideoCapture(0)
@@ -50,7 +62,7 @@ if start_stream:
         index_out+=1
         result_violence = violence_model().predict(frame, conf=0.55) 
         #* Caso o modelo detecte violência, ele vai entrar no loop
-        if len(result_violence[0].boxes) > 0:
+        if len(result_violence[0].boxes) > 0: # type: ignore
           loop_time:float = time.time() + 5 #* Temos que começar a contagem apenas depois que o primeiro frame de violência for detectado, pegando os próximos 5 segundos
           st.write("Violence outside the loop")
           #* Dentro desse loop temos que ler os frames chamando mais uma vez o cap.retrieve()
