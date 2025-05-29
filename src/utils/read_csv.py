@@ -7,8 +7,7 @@ from cv2.typing import MatLike
 from PIL import Image 
 from src.utils.remove_duplicated import remove_duplicate
 
-#TODO tenho que receber mais de um dataframe por data.
-#! Não sei o porque mas o script está executando mais de uma vez. Não consigo resolver
+#* verificar se estou recebendo imagens repetidas
 def read_image_csv(date:str, time:str) -> list[MatLike]| None:
   print("read_image_csv Called")
   index = 0

@@ -16,7 +16,6 @@ try:
   assert len(search_report) == 10 and search_report[4] == "-" and search_report[7] == "-"
   if search_report and search_button:
     #TODO Agora preciso pegar o arquivo que foi salvo, e associa aquela data pegar todos os diferentes horarios que foram obtidos
-    #TODO para cada horário eu crio um button que vai abrir os frames desse horário
     #! Não consigui fazer o redirect para a página de report diretamente.
     nbuttons = csv_time(search_report)
     if nbuttons is None:
@@ -28,21 +27,7 @@ try:
       with cols[n]:
           st.button(f"{button}", on_click=button_clicked, kwargs={"date": search_report, "time": button})
   st.page_link(page="pages/report.py", label="report page")
-        
-        
-        
-        
-        
-    # result = read_image_csv(search_report)
-  # if result == None:
-  #   st.error("No data found for the given date.")
-  # else:
-  #   st.success("Data retrieved successfully.")
-  #   col1, col2, col3 = st.columns(3)
-  #   with col1:
-  #     for result in result:
-  #       if st.page_link(page="pages/report.py", label=f"{result[1]}"):
-  #         st.session_state.report = result[0]
+  
 except AssertionError:
   st.error("Invalid date format. Please use YYYY-MM-DD.")
 #TODO tratar o erro caso o retorno da função não seja um dataframe (é necessário?)

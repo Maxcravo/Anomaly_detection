@@ -3,6 +3,7 @@ from folium import folium, Marker
 from src.utils.bd_functions import bd_get_id
 from src.utils.read_csv import read_image_csv, csv_lat_long
 from streamlit_folium import st_folium  # type: ignore
+from src.utils.remove_report import remove_report
 from PIL import Image
 
 st.title("This is the report page.")
@@ -12,8 +13,12 @@ if st.session_state["report_date"] is None:
 st.markdown(f"#### the time of the report is **{st.session_state["report"]}**")
 st.markdown(f"#### the date of the report is {st.session_state["report_date"]}")
 
+st.text("O report é veridico?")
+
+accept_button = st.button("sim")
+reject_button = st.button("não", on_click=remove_report, kwargs={"date": st.session_state["report_date"]})
+
 try:
-  index = 0
   response = read_image_csv(st.session_state["report_date"], st.session_state["report"])
   lat_long = csv_lat_long(st.session_state["report_date"])
   if response is None or lat_long is None:
