@@ -7,16 +7,13 @@ from src.utils.remove_report import remove_report
 from PIL import Image
 
 st.title("This is the report page.")
+
 if st.session_state["report_date"] is None:
   st.error("Select a report in saves page")
-  
+if "counter" not in st.session_state:
+  st.session_state["counter"] = 0
 st.markdown(f"#### the time of the report is **{st.session_state["report"]}**")
 st.markdown(f"#### the date of the report is {st.session_state["report_date"]}")
-
-st.text("O report é veridico?")
-
-accept_button = st.button("sim")
-reject_button = st.button("não", on_click=remove_report, kwargs={"date": st.session_state["report_date"], "time": st.session_state["report"]})
 
 try:
   response = read_image_csv(st.session_state["report_date"], st.session_state["report"])
@@ -27,9 +24,23 @@ try:
 except Exception as e:
   st.error(f"Error in read image {e}")
   st.stop()  
-for image in response:
-    st.image(image)
   
+# CREDIT: https://discuss.streamlit.io/t/display-images-one-by-one-with-a-next-button/21976/3
+def showReport(report_image):
+  col2.image(report_image, caption="report image")
+  st.session_state["counter"] += 1
+  if st.session_state["counter"] >= len(response): # type: ignore
+    st.session_state["counter"] = 0
+  
+
+col1,col2 = st.columns(2)
+col1.text("O REPORT É VERIDICO?")
+
+photo = response[st.session_state["counter"]]
+btn = col1.button("next report image", on_click=showReport, args=(photo,))
+col1.button("sim")
+col1.button("não", on_click=remove_report, kwargs={"date": st.session_state["report_date"], "time": st.session_state["report"]})
+
 map =  folium.Map([float(lat_long[1]), float(lat_long[0])], zoom_start=20)
 Marker(
   location= [float(lat_long[1]), float(lat_long[0])],
