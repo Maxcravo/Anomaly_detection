@@ -16,7 +16,7 @@ st.markdown(f"#### the date of the report is {st.session_state["report_date"]}")
 st.text("O report é veridico?")
 
 accept_button = st.button("sim")
-reject_button = st.button("não", on_click=remove_report, kwargs={"date": st.session_state["report_date"]})
+reject_button = st.button("não", on_click=remove_report, kwargs={"date": st.session_state["report_date"], "time": st.session_state["report"]})
 
 try:
   response = read_image_csv(st.session_state["report_date"], st.session_state["report"])
