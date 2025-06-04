@@ -34,15 +34,13 @@ names = violence_model().names
 # Button to start the stream
 start_stream = st.button("Start Stream")
 
-#TODO Transformar em uma função e colocar no src/utils
 # if start_stream and camera_url and longitude and latitude:
 if start_stream and longitude and latitude:
   st.session_state.latitude_longitude.update(latitude = latitude, longitude = longitude)
-  print(st.session_state.latitude_longitude)
   # cap = cv2.VideoCapture(camera_url)
   #! Test videoCap notebook
   cap = cv2.VideoCapture(0)
-  
+  #* set the camera to get 3 frames per second
   fps = cap.get(cv2.CAP_PROP_FPS)
   fps_out = 3
   index_in = -1
@@ -52,7 +50,8 @@ if start_stream and longitude and latitude:
       st.error("Error: Unable to open video stream. Please check the URL.")
   else:
     stop_stream = st.button("Stop Stream")
-    # Stream frames to the Streamlit app
+    if stop_stream:
+      cap.release()
     while cap.isOpened() and not stop_stream:
       cap_sucess = cap.grab()
       index_in +=1
@@ -63,8 +62,7 @@ if start_stream and longitude and latitude:
         result_violence = violence_model().predict(frame, conf=0.55) 
         #* Caso o modelo detecte violência, ele vai entrar no loop
         if len(result_violence[0].boxes) > 0: # type: ignore
-          loop_time:float = time.time() + 5 #* Temos que começar a contagem apenas depois que o primeiro frame de violência for detectado, pegando os próximos 5 segundos
-          st.write("Violence outside the loop")
+          loop_time:float = time.time() + 5 #* Temos que começar a contagem apenas depois que o primeiro frame de violência for detectado, pegando os próximos 5 segundos\
           #* Dentro desse loop temos que ler os frames chamando mais uma vez o cap.retrieve()
           while time.time() < loop_time:
             cap_loop = cap.grab()
@@ -75,7 +73,6 @@ if start_stream and longitude and latitude:
               index_out +=1
               frame_loop = face__blurry(frame_loop) #* Como foi identificado um frame de violência, aplicamos o blur no rosto dos envolvidos.
               st.image(frame_loop, channels="BGR")
-              #TODO Verificar se é necessário criar uma nova lista dentro da session_state para cada frame
               st.session_state.compressed_frame.append([compress_img(frame_loop)]) #* comprimimos a imagem e adicionamos na lista que está salva na sessão
               if not cap_sucess:
                 st.error("error")
@@ -83,8 +80,7 @@ if start_stream and longitude and latitude:
         if not cap_sucess:
           st.error("Error: Unable to read frame from stream.")
           break
-        #Debug Display the frame in the Streamlit app
-    cap.release()
+    # cap.release()
     st.success("Stream stopped.")
 
 button_decode = st.button("create csv")

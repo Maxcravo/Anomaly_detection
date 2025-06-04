@@ -8,7 +8,10 @@ from PIL import Image
 from src.utils.remove_duplicated import remove_duplicate
 
 #* verificar se estou recebendo imagens repetidas
-def read_image_csv(date:str, time:str) -> list[MatLike]| None:
+#! Essa funcao tem que receber um index para que ela leia uma image especifica por vez ao ser chamada
+#! Lembrar que o streamlit chama essa funcao, toda vez que o usuario clicar no botao de next image, entao ela vai ler a imagem do index que foi passado
+#! uma solução é criar uma outra função que vai a partir das imagens com aquele horário vai criar um novo dataframe com apenas as imagens daquele horário 
+def read_image_csv(date:str, time:str, index:int) -> list[MatLike]| None:
   print("read_image_csv Called")
   index = 0
   dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

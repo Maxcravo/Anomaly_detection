@@ -6,9 +6,11 @@ from PIL import Image
 from utils.model_init import face_model
 
 # https://sayantansamanta098.medium.com/real-time-face-detection-and-blurring-using-python-and-opencv-a0ac39efade2
+face_model_instance = face_model()
+
 def face__blurry(frame:MatLike) -> MatLike:
   try:
-    results = face_model().predict(frame, conf=0.5, show=True)
+    results = face_model_instance.predict(frame, conf=0.5)
     for result in results:
       boxes = result.boxes.xyxy # type: ignore
       for box in boxes:
@@ -17,7 +19,6 @@ def face__blurry(frame:MatLike) -> MatLike:
         roi = frame[y1:y2, x1:x2] # pegamos a região do rosto, usando a altura e a largura (cortamos a imagem de y1 até y2(altura) e de x1 até x2(largura))
         face_blur = cv2.GaussianBlur(roi,(99, 99), 90) # aplicamos o blur na imagem na região do rosto
         frame[y1:y2, x1:x2] = face_blur  # pegamos essa região que na qual aplicamos o blur e colocamos de volta na imagem original nos mesmo pontos
-    #   frame[y:y+h, x:x+w] = blur
   except Exception as e:
     print(f"Error: {e} in face blurry")
   return frame

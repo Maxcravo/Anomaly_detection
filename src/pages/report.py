@@ -16,7 +16,7 @@ st.markdown(f"#### the time of the report is **{st.session_state["report"]}**")
 st.markdown(f"#### the date of the report is {st.session_state["report_date"]}")
 
 try:
-  response = read_image_csv(st.session_state["report_date"], st.session_state["report"])
+  response = read_image_csv(st.session_state["report_date"], st.session_state["report"], st.session_state["counter"])
   lat_long = csv_lat_long(st.session_state["report_date"])
   if response is None or lat_long is None:
     st.error("error in get the images")
